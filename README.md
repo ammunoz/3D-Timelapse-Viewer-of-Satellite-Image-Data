@@ -14,7 +14,11 @@ To be added.
 # Thanks
 The following libraries / open-source projects were used in the development of dat.GUI:
 * [THREE.JS](https://github.com/mrdoob/three.js/)
-* [ShaderLoader](https://gist.github.com/THeK3nger/300b6a62b923c913223fbd29c8b5ac73)
 * [THREEx.KeyboardState](https://github.com/jeromeetienne/threex.keyboardstate)
+* [ShaderLoader](https://gist.github.com/THeK3nger/300b6a62b923c913223fbd29c8b5ac73)
 * [stats.js](https://github.com/mrdoob/stats.js/)
 * [dat.gui](https://github.com/dataarts/dat.gui)
+
+The data used provided by:
+* [Landsat Image Data](https://earthexplorer.usgs.gov/)
+* [ASTER Digital Elevation Model Data](https://earthexplorer.usgs.gov/)
