@@ -1,0 +1,7 @@
+# VSCode Settings
+.vscode/
+
+# Javascript Typings
+typings/
+typings.json
+jsconfig.json
