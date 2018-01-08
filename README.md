@@ -9,7 +9,8 @@ Features:
   * Vegetation spread
 
 # DEMO
-To be added.
+[Access demo here](http://www.ammunoz.com/3D-Timelapse-Viewer-of-Satellite-Image-Data/)
+Note: Loading may take a while..
 
 # Thanks
 The following libraries / open-source projects were used in the development of dat.GUI:
