@@ -4,28 +4,10 @@ const int GRY = 1;
 const int BW  = 2;
 
 // Textures
-uniform sampler2D tAug_1990_RGB;
-uniform sampler2D tAug_1990_NST;
-uniform sampler2D tAug_1994_RGB;
-uniform sampler2D tAug_1994_NST;
-uniform sampler2D tAug_1996_RGB;
-uniform sampler2D tAug_1996_NST;
-uniform sampler2D tAug_1997_RGB;
-uniform sampler2D tAug_1997_NST;
-uniform sampler2D tAug_1998_RGB;
-uniform sampler2D tAug_1998_NST;
-uniform sampler2D tAug_2002_RGB;
-uniform sampler2D tAug_2002_NST;
-uniform sampler2D tAug_2004_RGB;
-uniform sampler2D tAug_2004_NST;
-uniform sampler2D tAug_2006_RGB;
-uniform sampler2D tAug_2006_NST;
-uniform sampler2D tAug_2007_RGB;
-uniform sampler2D tAug_2007_NST;
-uniform sampler2D tAug_2009_RGB;
-uniform sampler2D tAug_2009_NST;
-uniform sampler2D tAug_2010_RGB;
-uniform sampler2D tAug_2010_NST;
+uniform sampler2D tCur_RGB;
+uniform sampler2D tCur_NST;
+uniform sampler2D tNxt_RGB;
+uniform sampler2D tNxt_NST;
 uniform sampler2D tSnw;
 uniform sampler2D tWnm;
 uniform sampler2D tGrs;
@@ -43,38 +25,6 @@ uniform float fTme;
 varying vec2 vUv;
 varying vec3 vViewPosition;
 varying vec3 vVertexPosition;
-
-// Helper function for determining current RGB texture
-vec3 GetColour(int ctr, vec2 uv)
-{
-    if(ctr == 0){return texture2D(tAug_1990_RGB, uv).rgb;}
-    else if(ctr == 1){return texture2D(tAug_1994_RGB, uv).rgb;}
-    else if(ctr == 2){return texture2D(tAug_1996_RGB, uv).rgb;}
-    else if(ctr == 3){return texture2D(tAug_1997_RGB, uv).rgb;}        
-    else if(ctr == 4){return texture2D(tAug_1998_RGB, uv).rgb;}
-    else if(ctr == 5){return texture2D(tAug_2002_RGB, uv).rgb;}
-    else if(ctr == 6){return texture2D(tAug_2004_RGB, uv).rgb;}
-    else if(ctr == 7){return texture2D(tAug_2006_RGB, uv).rgb;}
-    else if(ctr == 8){return texture2D(tAug_2007_RGB, uv).rgb;}
-    else if(ctr == 9){return texture2D(tAug_2009_RGB, uv).rgb;}
-    else if(ctr == 10){return texture2D(tAug_2010_RGB, uv).rgb;}
-}
-
-// Helper function for determining current thermal texture
-vec3 GetThermals(int ctr, vec2 uv)
-{
-    if(ctr == 0){return texture2D(tAug_1990_NST, uv).rgb;}
-    else if(ctr == 1){return texture2D(tAug_1994_NST, uv).rgb;}
-    else if(ctr == 2){return texture2D(tAug_1996_NST, uv).rgb;}
-    else if(ctr == 3){return texture2D(tAug_1997_NST, uv).rgb;}
-    else if(ctr == 4){return texture2D(tAug_1998_NST, uv).rgb;}
-    else if(ctr == 5){return texture2D(tAug_2002_NST, uv).rgb;}
-    else if(ctr == 6){return texture2D(tAug_2004_NST, uv).rgb;}
-    else if(ctr == 7){return texture2D(tAug_2006_NST, uv).rgb;}
-    else if(ctr == 8){return texture2D(tAug_2007_NST, uv).rgb;}
-    else if(ctr == 9){return texture2D(tAug_2009_NST, uv).rgb;}
-    else if(ctr == 10){return texture2D(tAug_2010_NST, uv).rgb;}
-}
 
 // Interpolates two RGB colours
 vec3 ClrInterp(vec3 clr_a, vec3 clr_b)
@@ -95,20 +45,19 @@ void main()
     if(bPly)
     {
         // Interpolate RGB values
-        int next_texture = (iCtr == 10) ? 0 : iCtr + 1;
-        vec3 ca = GetColour(iCtr, vUv);
-        vec3 cb = GetColour(next_texture, vUv);
+        vec3 ca = texture2D(tCur_RGB, vUv).rgb;
+        vec3 cb = texture2D(tNxt_RGB, vUv).rgb;
         colour = vec4(ClrInterp(ca, cb), 1.0);
 
         // Interpolate Thermal values
-        vec3 nsa = GetThermals(iCtr, vUv);
-        vec3 nsb = GetThermals(next_texture, vUv);
+        vec3 nsa = texture2D(tCur_NST, vUv).rgb;
+        vec3 nsb = texture2D(tNxt_NST, vUv).rgb;
         ns = ClrInterp(nsa, nsb).rg;
     }
     else
     {
-        colour = vec4(GetColour(iCtr, vUv), 1.0);
-        ns = GetThermals(iCtr, vUv).rg;
+        colour = texture2D(tCur_RGB, vUv);
+        ns = texture2D(tCur_NST, vUv).rg;
     }
     
     if(colour.rgb == vec3(0.0, 0.0, 0.0)){discard;}

@@ -42,7 +42,7 @@ skydome.rotateY(- Math.PI / 2.0);
 scene.add(skydome);
 */
 
-// Prepare Shader uniforms
+// Initialize Shader uniforms
 var uniforms =
 {
   // Textures
@@ -70,21 +70,20 @@ const keys = ["RGB", "NST"];
 const years = [1990, 1994, 1996, 1997, 1998, 2002, 2004, 2006, 2007, 2009, 2010];
 for(var year = 0; year < years.length; ++year)
 {
+  map_aug[years[year]] = {};
   for(var key = 0; key < keys.length; ++key)
   {
-    map_aug[years[year]] = {};
     map_aug[years[year]][keys[key]] = textureloader.load("data/PNG/August-Downsized/AUG_" + years[year] + "_" + keys[key] + ".PNG");
     map_aug[years[year]][keys[key]].minFilter = THREE.LinearFilter;
-    uniforms["tAug_" + years[year] + "_" + keys[key]] =
-    {
-      type: "t",
-      value: map_aug[years[year]][keys[key]]
-    };
   }
 }
+
+// Set texture uniforms
 uniforms.iYmx.value = years.length - 1;
-var textbox = document.getElementById("textbox");
-textbox.innerText = "LOADING..";
+uniforms["tCur_RGB"] = {type: "t", value: map_aug[years[uniforms.iCtr.value]]["RGB"]};
+uniforms["tCur_NST"] = {type: "t", value: map_aug[years[uniforms.iCtr.value]]["NST"]};
+uniforms["tNxt_RGB"] = {type: "t", value: map_aug[years[uniforms.iCtr.value + 1]]["RGB"]};
+uniforms["tNxt_NST"] = {type: "t", value: map_aug[years[uniforms.iCtr.value + 1]]["NST"]};
 
 // GUI elements
 var gui = new dat.GUI({height : 5 * 32 - 1});
@@ -95,8 +94,11 @@ detection.add(uniforms["bWtr"], 'value').name("Detect Water").listen();
 detection.add(uniforms["bSnw"], 'value').name("Detect Ice / Snow").listen();
 detection.add(uniforms["bVeg"], 'value').name("Detect Vegetation").listen();
 detection.add(uniforms["iCfd"], 'value', 0, 3).name("Confidence Interval").listen();
-gui.add(uniforms["iCtr"], 'value', 0, years.length - 1).step(1).name("Year Index").listen();
+gui.add(uniforms["iCtr"], 'value', 0, years.length - 1).step(1).name("Year Index").listen().onChange(function(value){UpdateTextures(value);});
 gui.add(uniforms["bPly"], 'value').name("Play Animation").listen();
+
+var textbox = document.getElementById("textbox");
+textbox.innerText = "LOADING..";
 
 // Statistics
 var stats_fps = new Stats();
@@ -155,9 +157,23 @@ ShaderLoader("shaders/vertex.glsl", "shaders/fragment.glsl", function(vertex, fr
 function play()
 {
   if(!uniforms.bPly.value) return;
+
+  // Update values
   uniforms.iCtr.value = (uniforms.iCtr.value + 1) % years.length;
   uniforms.fTme.value = 0;
+  UpdateTextures(uniforms.iCtr.value);
 };
+
+function UpdateTextures(value)
+{
+  // Update textures
+  var cur_yr = value;
+  var nxt_yr = (cur_yr == years.length - 1) ? 0 : cur_yr + 1;
+  uniforms["tCur_RGB"] = {type: "t", value: map_aug[years[cur_yr]]["RGB"]};
+  uniforms["tCur_NST"] = {type: "t", value: map_aug[years[cur_yr]]["NST"]};
+  uniforms["tNxt_RGB"] = {type: "t", value: map_aug[years[nxt_yr]]["RGB"]};
+  uniforms["tNxt_NST"] = {type: "t", value: map_aug[years[nxt_yr]]["NST"]};
+}
 
 function UpdateClock()
 {
